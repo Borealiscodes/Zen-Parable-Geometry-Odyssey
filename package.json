@@ -1,0 +1,10 @@
+{
+  "name": "zen-parable-geometry-odyssey",
+  "version": "1.0.0",
+  "description": "Side-scrolling Buddhist parable & geometric puzzle game set against parallax sumi-e Japanese landscapes with a 4-layer looped Yo-scale WebAudio soundtrack.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/parable-kernel.test.mjs"
+  },
+  "license": "MIT"
+}
