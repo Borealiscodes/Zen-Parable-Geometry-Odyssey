@@ -1,11 +1,3 @@
-/**
- * src/sumi-renderer.js — Parallax Sumi-e Japanese Landscape & Geometric Puzzle Renderer (Ledger 2)
- * Zero-flicker steady parchment/mist gradient with parallax Mount Fuji, bamboo,
- * stone lanterns, interactive parable nodes, and vermilion Torii gate.
- *
- * Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
- */
-
 import { fromQ16 } from "./core.js";
 import { WORLD_W } from "./parable-kernel.js";
 
@@ -13,7 +5,7 @@ export function renderSumiWorld(ctx, state) {
   const { width, height } = ctx.canvas;
   const camX = fromQ16(state.cameraXQ16);
 
-  // 1. Steady parchment & indigo dawn sky gradient (zero flicker)
+  // 1. Steady parchment & indigo dawn sky gradient
   const sky = ctx.createLinearGradient(0, 0, 0, height);
   sky.addColorStop(0, "#1c2536");
   sky.addColorStop(0.55, "#3b4d63");
@@ -21,7 +13,7 @@ export function renderSumiWorld(ctx, state) {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, width, height);
 
-  // 2. Distant Parallax Mount Fuji silhouette (0.18x parallax)
+  // 2. Distant Parallax Mount Fuji silhouette
   const fujiX = 520 - camX * 0.18;
   ctx.fillStyle = "rgba(30, 41, 59, 0.55)";
   ctx.beginPath();
@@ -32,7 +24,6 @@ export function renderSumiWorld(ctx, state) {
   ctx.closePath();
   ctx.fill();
 
-  // Snow cap on Mount Fuji
   ctx.fillStyle = "rgba(248, 250, 252, 0.72)";
   ctx.beginPath();
   ctx.moveTo(fujiX - 42, 118);
@@ -45,7 +36,7 @@ export function renderSumiWorld(ctx, state) {
   ctx.closePath();
   ctx.fill();
 
-  // 3. Midground Parallax Ink Hills & Bamboo Silhouettes (0.45x parallax)
+  // 3. Midground Parallax Ink Hills & Bamboo Silhouettes
   ctx.fillStyle = "#1e293b";
   ctx.beginPath();
   ctx.moveTo(0, height);
@@ -58,7 +49,6 @@ export function renderSumiWorld(ctx, state) {
   ctx.closePath();
   ctx.fill();
 
-  // Bamboo stalks along midground
   ctx.strokeStyle = "rgba(15, 23, 42, 0.45)";
   ctx.lineWidth = 4;
   for (let b = 0; b < 8; b++) {
@@ -69,11 +59,10 @@ export function renderSumiWorld(ctx, state) {
     ctx.stroke();
   }
 
-  // 4. World-Space Foreground Ground & Parable Obstacles (1.0x camera)
+  // 4. World-Space Foreground Ground & Parable Obstacles
   ctx.save();
   ctx.translate(-camX, 0);
 
-  // Foreground ink earth path
   ctx.fillStyle = "#0f172a";
   ctx.fillRect(0, height - 56, WORLD_W, 56);
 
@@ -83,7 +72,6 @@ export function renderSumiWorld(ctx, state) {
     ctx.fillStyle = "#0284c7";
     ctx.fillRect(riverStartX, height - 56, riverEndX - riverStartX, 56);
 
-    // Animated water ripples
     ctx.strokeStyle = "#bae6fd";
     ctx.lineWidth = 1.5;
     for (let rx = riverStartX + 16; rx < riverEndX - 16; rx += 38) {
@@ -94,53 +82,138 @@ export function renderSumiWorld(ctx, state) {
       ctx.stroke();
     }
 
-    // Floating geometric raft
     const raftX = fromQ16(state.raftXQ16);
     ctx.fillStyle = "#f59e0b";
-    ctx.fillRect(raftX - 26, height - 64, 52, 10);
+    ctx.fillRect(raftX - 28, height - 66, 56, 11);
+    ctx.strokeStyle = "#78350f";
+    ctx.strokeRect(raftX - 28, height - 66, 56, 11);
   }
 
-  // Stage IV: Overflowing Stone Basin
-  if (state.stageIndex === 3) {
-    const basin = state.stageDef.nodes.at(0);
-    ctx.fillStyle = "#475569";
-    ctx.fillRect(basin.x - 32, basin.y + 18, 64, 24);
-
-    // Water level inside basin (4 -> 0)
-    if (state.cupLevel > 0) {
-      ctx.fillStyle = "#38bdf8";
-      const fillH = state.cupLevel * 5;
-      ctx.fillRect(basin.x - 26, basin.y + 18 - fillH, 52, fillH);
-    }
-
-    ctx.fillStyle = "#fef08a";
-    ctx.font = "bold 12px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(`Cup Level: ${state.cupLevel} / 4`, basin.x, basin.y - 26);
-    ctx.textAlign = "left";
-  }
-
-  // Render Parable Nodes (Bells, Lanterns, Banners, Stones)
+  // Render Distinct Japanese Assets for Every Parable Node
   for (const node of state.stageDef.nodes) {
-    let drawY = node.y;
-    if (node.kind === "WIND_BANNER" && !state.bannersAligned) {
-      drawY += Math.sin(state.tick * 0.14 + node.phase * 2.1) * 14;
+    ctx.textAlign = "center";
+
+    if (node.kind === "TWIN_BELL") {
+      // Hanging Temple Bell (Bonshō) on wooden frame
+      const isAlert = state.twinBellAlertTicks > 0;
+      ctx.fillStyle = "#475569";
+      ctx.fillRect(node.x - 20, node.y - 24, 4, 62);
+      ctx.fillRect(node.x + 16, node.y - 24, 4, 62);
+      ctx.fillRect(node.x - 24, node.y - 26, 48, 5);
+
+      ctx.fillStyle = isAlert ? "#f87171" : "#d97706";
+      ctx.beginPath();
+      ctx.moveTo(node.x - 10, node.y - 18);
+      ctx.lineTo(node.x + 10, node.y - 18);
+      ctx.lineTo(node.x + 14, node.y + 12);
+      ctx.lineTo(node.x - 14, node.y + 12);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 34);
+    } else if (node.kind === "SOLITARY_BELL") {
+      // Glowing Stone Tōrō Lantern
+      ctx.fillStyle = "#64748b";
+      ctx.fillRect(node.x - 8, node.y + 10, 16, 18);
+      ctx.fillRect(node.x - 14, node.y + 26, 28, 6);
+
+      // Warm lantern paper window
+      ctx.fillStyle = state.gateOpen ? "#fde047" : "#fef08a";
+      ctx.fillRect(node.x - 9, node.y - 8, 18, 18);
+
+      // Pagoda cap
+      ctx.fillStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(node.x - 18, node.y - 8);
+      ctx.lineTo(node.x, node.y - 22);
+      ctx.lineTo(node.x + 18, node.y - 8);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#fde047";
+      ctx.font = "bold 11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 30);
+    } else if (node.kind === "RAFT_DOCK" || node.kind === "SHORE_STONE") {
+      // Wooden River Pier Pilings & Lantern Post
+      ctx.fillStyle = "#78350f";
+      ctx.fillRect(node.x - 22, node.y + 14, 44, 8);
+      ctx.fillRect(node.x - 16, node.y + 22, 6, 52);
+      ctx.fillRect(node.x + 10, node.y + 22, 6, 52);
+
+      ctx.fillStyle = state.gateOpen ? "#fde047" : "#fef3c7";
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 18);
+    } else if (node.kind === "WIND_BANNER") {
+      // Wooden banner pole & flowing silk cloth
+      ctx.fillStyle = "#475569";
+      ctx.fillRect(node.x - 16, node.y - 20, 4, 86);
+      ctx.fillRect(node.x - 16, node.y - 16, 34, 4);
+
+      const flutter = state.bannersAligned
+        ? Math.sin(state.tick * 0.03) * 3
+        : Math.sin(state.tick * 0.16 + node.phase * 2.1) * 18;
+
+      ctx.fillStyle = state.bannersAligned ? "#fde047" : "#93c5fd";
+      ctx.beginPath();
+      ctx.moveTo(node.x - 12, node.y - 12);
+      ctx.lineTo(node.x + 14, node.y - 12);
+      ctx.quadraticCurveTo(node.x + 14 + flutter, node.y + 22, node.x + 12 + flutter * 1.2, node.y + 52);
+      ctx.lineTo(node.x - 12 + flutter * 0.8, node.y + 52);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 28);
+    } else if (node.kind === "STILLNESS_STONE") {
+      // Carved Zen Standing Rock (Iwakura)
+      ctx.fillStyle = state.bannersAligned ? "#fde047" : "#94a3b8";
+      ctx.beginPath();
+      ctx.moveTo(node.x - 18, node.y + 24);
+      ctx.lineTo(node.x - 12, node.y - 16);
+      ctx.lineTo(node.x + 4, node.y - 22);
+      ctx.lineTo(node.x + 18, node.y + 24);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 30);
+    } else if (node.kind === "OVERFLOW_BASIN") {
+      // Carved Tsukubai Stone Water Basin / Ceramic Tea Cup
+      ctx.fillStyle = "#475569";
+      ctx.beginPath();
+      ctx.moveTo(node.x - 34, node.y + 4);
+      ctx.lineTo(node.x + 34, node.y + 4);
+      ctx.lineTo(node.x + 24, node.y + 38);
+      ctx.lineTo(node.x - 24, node.y + 38);
+      ctx.closePath();
+      ctx.fill();
+
+      // Water level inside basin (4 -> 0)
+      if (state.cupLevel > 0) {
+        ctx.fillStyle = "#38bdf8";
+        const fillH = state.cupLevel * 6;
+        ctx.fillRect(node.x - 28, node.y + 4 - fillH, 56, fillH);
+      }
+
+      // Cleanly separated stacked labels (zero overlap)
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "11px system-ui, sans-serif";
+      ctx.fillText(node.label, node.x, node.y - 44);
+
+      ctx.fillStyle = "#fde047";
+      ctx.font = "bold 12px monospace";
+      ctx.fillText(`Cup Level: ${state.cupLevel} / 4`, node.x, node.y - 28);
     }
 
-    const isAlert = node.kind === "TWIN_BELL" && state.twinBellAlertTicks > 0;
-    ctx.fillStyle = isAlert ? "#f87171" : state.gateOpen ? "#fde047" : "#fef3c7";
-    ctx.strokeStyle = "#0f172a";
-    ctx.lineWidth = 2;
-
-    ctx.beginPath();
-    ctx.arc(node.x, drawY, 13, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#f8fafc";
-    ctx.font = "11px system-ui, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(node.label, node.x, drawY - 20);
     ctx.textAlign = "left";
   }
 
@@ -153,14 +226,11 @@ export function renderSumiWorld(ctx, state) {
   // Exit Vermilion Torii Gate
   const gx = state.stageDef.gateX;
   ctx.fillStyle = state.gateOpen ? "#ef4444" : "#7f1d1d";
-  // Pillars
   ctx.fillRect(gx - 18, height - 156, 8, 100);
   ctx.fillRect(gx + 10, height - 156, 8, 100);
-  // Top Kasagi lintel
   ctx.fillRect(gx - 28, height - 164, 56, 9);
   ctx.fillRect(gx - 22, height - 144, 44, 6);
 
-  // Energy barrier across closed gate
   if (!state.gateOpen) {
     ctx.strokeStyle = "rgba(253, 224, 71, 0.65)";
     ctx.lineWidth = 2;

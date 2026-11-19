@@ -142,7 +142,7 @@ export function stepParableFrame(state, accelXQ16 = 0, accelYQ16 = 0) {
   let vy = qMul(qAdd(state.traveler.vyQ16, qMul(accelYQ16, dtQ16)), dampQ16);
 
   // Stage III crosswind pushback if banners are not yet aligned
-  if (state.stageIndex === 2 && !state.bannersAligned && fromQ16(state.traveler.xQ16) > 360) {
+  if (state.stageIndex === 2 && !state.bannersAligned && fromQ16(state.traveler.xQ16) > 510) {
     vx = qSub(vx, toQ16(14));
   }
 
