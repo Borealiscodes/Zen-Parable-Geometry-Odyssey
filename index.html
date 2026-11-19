@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Zen Parable Geometry Odyssey — Koan & Sumi-e Puzzle Adventure</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>⛩️ Zen Parable Geometry Odyssey <span class="badge">Q16.16 • Yo-Scale Audio</span></h1>
+    <div id="hud-layers">Yo-Scale Layers: 1 / 4</div>
+  </header>
+
+  <main class="parable-layout">
+    <section class="viewport-card">
+      <div class="scroll-banner">
+        <strong id="parable-title">Stage I: The Sound of One Hand (Hakuin Ekaku)</strong>
+        <blockquote id="parable-koan">“Two hands clap and there is a sound; what is the sound of one hand?”</blockquote>
+        <p id="parable-hint">Chime only the solitary lantern on the upper ridge to part the gate.</p>
+      </div>
+
+      <canvas id="parable-canvas" width="680" height="440"></canvas>
+
+      <div class="action-bar">
+        <button id="btn-chime">🔔 Emit Chime (Space)</button>
+        <button id="btn-collapse">🍃 Release / Empty (C)</button>
+        <button id="btn-audio">Sound: Muted</button>
+      </div>
+    </section>
+
+    <aside class="stages-card">
+      <h3>Parable Chapters</h3>
+      <div class="stage-list">
+        <button data-stage="0">I. The Sound of One Hand</button>
+        <button data-stage="1">II. The Raft &amp; The Shore</button>
+        <button data-stage="2">III. Two Monks &amp; The Flag</button>
+        <button data-stage="3">IV. The Empty Cup</button>
+      </div>
+      <p class="controls-note">
+        <strong>Controls:</strong> Drag/touch or use <code>WASD</code> / Arrow keys to glide. Press <code>Space</code> to chime at bells or stones, and <code>C</code> to release rafts or empty the stone cup.
+      </p>
+    </aside>
+  </main>
+
+  <script type="module" src="src/parable-app.js"></script>
+</body>
+</html>
